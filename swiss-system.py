@@ -58,7 +58,7 @@ if __name__ == "__main__":
         quit()
 
     try:
-        df = pd.read_csv(path_csv)
+        df = pd.read_csv(path_csv, index_col=0)
     except Exception as e:
         logger.error(type(e))
         logger.error(e.message)
@@ -74,11 +74,11 @@ if __name__ == "__main__":
         logger.error("Invalid format: {}".format(path_csv))
         quit()
     elif num_match == 0:
-        members = list(df[df.columns[0]])
+        members = list(df["Name"])
         match_table = list(members)
         random.shuffle(match_table)
     else:
-        members = list(df[df.columns[0]])
+        members = list(df["Name"])
         rand = list(np.random.rand(len(members)))
         score = np.zeros(len(members))
         for i in range(int(num_match)):
@@ -94,5 +94,5 @@ if __name__ == "__main__":
     df["win_{}".format(int(num_match)+1)] = pd.np.nan
     df["lose_{}".format(int(num_match)+1)] = pd.np.nan
     df["draw_{}".format(int(num_match)+1)] = pd.np.nan
-    df.to_csv(path_csv,index=None)
     print df
+    df.to_csv(path_csv)
