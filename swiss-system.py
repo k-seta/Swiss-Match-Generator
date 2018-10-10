@@ -63,5 +63,7 @@ if __name__ == "__main__":
         match_table = list(itertools.izip_longest(*[iter(members_shuffle)]*2))
         opponents = generate_list_opponents(members, match_table)
         df["opponent_1"] = opponents
-        df["match_1"] = pd.np.nan
+        df["win_1"] = pd.np.nan
+        df["lose_1"] = pd.np.nan
+        df["draw_1"] = pd.np.nan
     df.to_csv(path_csv,index=None)
