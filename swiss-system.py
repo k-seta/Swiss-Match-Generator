@@ -51,7 +51,7 @@ if __name__ == "__main__":
         logger.error(e.message)
         quit()
 
-    num_match = (len(df.columns) - 1 ) / 2.0
+    num_match = (len(df.columns) - 1 ) / 3.0
     if num_match < 0:
         logger.error("Invalid format: {}".format(path_csv))
         quit()
