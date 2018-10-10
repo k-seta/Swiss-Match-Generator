@@ -51,11 +51,11 @@ if __name__ == "__main__":
         logger.error(e.message)
         quit()
 
-    num_match = (len(df.columns) + 1 ) / 2.0
-    if num_match < 1:
+    num_match = (len(df.columns) - 1 ) / 2.0
+    if num_match < 0:
         logger.error("Invalid format: {}".format(path_csv))
         quit()
-    elif num_match == 1:
+    elif num_match == 0:
         members = list(df[df.columns[0]])
         members_shuffle = list(members)
         random.shuffle(members_shuffle)
