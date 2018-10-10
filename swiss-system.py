@@ -4,6 +4,7 @@ import os
 import sys
 import random
 import itertools
+import numpy as np
 import pandas as pd
 from logging import getLogger, DEBUG, Formatter
 from rainbow_logging_handler import RainbowLoggingHandler
@@ -21,13 +22,26 @@ logger.propagate = False
 
 def generate_list_opponents(members, match_table):
     tmp = []
-    for p1, p2 in match_table:
+    table = list(itertools.izip_longest(*[iter(match_table)]*2))
+    for p1, p2 in table:
         tmp.append((members.index(p2), p1))
         tmp.append((members.index(p1), p2))
     tmp.sort()
     opponents = zip(*tmp)[1]
-    logger.debug(str(opponents).decode("string-escape"))
+    # logger.debug(str(opponents).decode("string-escape"))
     return opponents
+
+def calc_match_score(win, lose):
+    tmp = zip(win, lose)
+    score = []
+    for x in tmp:
+        if x[0] > x[1]:
+            score.append(3)
+        elif x[0] == x[1]:
+            score.append(1)
+        else:
+            score.append(0)
+    return np.array(score)
 
 if __name__ == "__main__":
     argv = sys.argv
@@ -45,25 +59,40 @@ if __name__ == "__main__":
 
     try:
         df = pd.read_csv(path_csv)
-        print df
     except Exception as e:
         logger.error(type(e))
         logger.error(e.message)
         quit()
 
-    num_match = (len(df.columns) - 1 ) / 3.0
+    if df.isnull().any().any():
+        logger.error("Missing Values: {}".format(path_csv))
+        quit()
+
+    print len(df.columns)
+    num_match = (len(df.columns) - 1 ) / 4.0
     if num_match < 0:
         logger.error("Invalid format: {}".format(path_csv))
         quit()
     elif num_match == 0:
         members = list(df[df.columns[0]])
-        members_shuffle = list(members)
-        random.shuffle(members_shuffle)
-
-        match_table = list(itertools.izip_longest(*[iter(members_shuffle)]*2))
-        opponents = generate_list_opponents(members, match_table)
-        df["opponent_1"] = opponents
-        df["win_1"] = pd.np.nan
-        df["lose_1"] = pd.np.nan
-        df["draw_1"] = pd.np.nan
+        match_table = list(members)
+        random.shuffle(match_table)
+    else:
+        members = list(df[df.columns[0]])
+        rand = list(np.random.rand(len(members)))
+        score = np.zeros(len(members))
+        for i in range(int(num_match)):
+            win = list(df["win_{}".format(int(num_match))])
+            lose = list(df["lose_{}".format(int(num_match))])
+            score += calc_match_score(win, lose)
+        list_score_member = zip(score, rand, members)
+        list_score_member.sort()
+        sorted_score, sorted_rand, match_table = zip(*list_score_member)
+        
+    opponents = generate_list_opponents(members, match_table)
+    df["opponent_{}".format(int(num_match)+1)] = opponents
+    df["win_{}".format(int(num_match)+1)] = pd.np.nan
+    df["lose_{}".format(int(num_match)+1)] = pd.np.nan
+    df["draw_{}".format(int(num_match)+1)] = pd.np.nan
     df.to_csv(path_csv,index=None)
+    print df
