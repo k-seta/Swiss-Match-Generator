@@ -2,6 +2,7 @@
 #-*- coding:utf-8 -*-
 import os
 import sys
+import shutil
 import random
 import itertools
 import numpy as np
@@ -96,3 +97,4 @@ if __name__ == "__main__":
     df["draw_{}".format(int(num_match)+1)] = pd.np.nan
     print df
     df.to_csv(path_csv)
+    shutil.copyfile(path_csv, "./docs/src/majerrabaine_cup.csv")
