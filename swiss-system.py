@@ -83,8 +83,8 @@ if __name__ == "__main__":
         rand = list(np.random.rand(len(members)))
         score = np.zeros(len(members))
         for i in range(int(num_match)):
-            win = list(df["win_{}".format(int(num_match))])
-            lose = list(df["lose_{}".format(int(num_match))])
+            win = list(df["win_{}".format(int(i+1))])
+            lose = list(df["lose_{}".format(int(i+1))])
             score += calc_match_score(win, lose)
         list_score_member = zip(score, rand, members)
         list_score_member.sort()
